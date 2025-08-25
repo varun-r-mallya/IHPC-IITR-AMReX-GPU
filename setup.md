@@ -40,7 +40,7 @@ This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 
-Clone this repository, then install apptainer.
+Clone this repository with the `--submodule-recurse` flag, then install apptainer.
 
 Add the following extra flag to `cmake` in amrex89: 
 ```bash
@@ -74,9 +74,10 @@ AMREX_HYDRO_HOME ?= /usr/local/AMReX-Hydro
 ```
 Then run from `A-STAR/IAMR/Tutorials/FlowPastCylinder/`:
 ```bash
+cd IAMR/Tutorials/FlowPastCylinder;
 apptainer exec --cleanenv --nv ../../../amrex_sm89.sif make -j32 USE_CUDA=TRUE USE_OMP=TRUE
 ```
-Unpack the Zip File for the cylinder flow, then run:
+For the cylinder flow, run from root directory:
 ```bash
-apptainer exec --cleanenv --nv amrex_sm89.sif /home/xeon/A-STAR/IAMR/Tutorials/FlowPastCylinder/amr3d.gnu.MPI.CUDA.ex  /home/xeon/A-STAR/cylinder_test/inputs.3d.flow_past_cylinder-x
+apptainer exec --cleanenv --nv amrex_sm89.sif /home/xeon/A-STAR/IAMR/Tutorials/FlowPastCylinder/amr3d.gnu.MPI.OMP.CUDA.ex /home/xeon/A-STAR/cylinder_test/inputs.3d.flow_past_cylinder-x
 ```
