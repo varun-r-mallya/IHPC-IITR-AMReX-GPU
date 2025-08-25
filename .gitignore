@@ -1,0 +1,13 @@
+*.deb
+*.sif
+
+# the following ignore calculations
+plt*/
+chk*/
+
+# ignores all kinds of log files.
+*log*  
+
+Backtrace.*
+tmp_build_dir/
+build/
