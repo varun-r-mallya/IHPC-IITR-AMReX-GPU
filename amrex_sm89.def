@@ -1,0 +1,66 @@
+Bootstrap: localimage
+From: cuda12.sif
+
+%environment
+    export CUDA_HOME=/usr/local/cuda
+    export PATH=$CUDA_HOME/bin:$PATH
+    export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+    export HDF5_ROOT=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
+    export AMReX_HOME=/usr/local/amrex
+	export AMREX_HYDRO_HOME=/usr/local/AMReX-Hydro
+
+%files
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    
+	export CUDA_HOME=/usr/local/cuda
+	export PATH=$CUDA_HOME/bin:$PATH
+	export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+	
+    apt update
+    apt install -y libhdf5-dev libhdf5-openmpi-dev
+    apt clean
+    rm -rf /var/lib/apt/lists/*
+    
+    cd /usr/local
+    
+    # Clone AMReX
+	git clone https://github.com/AMReX-Codes/amrex.git
+	cd amrex
+	mkdir build && cd build
+	
+	cmake .. \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DAMReX_GPU_BACKEND=CUDA \
+		-DAMReX_CUDA_ARCH=89 \
+		-DAMReX_MPI=ON \
+		-DAMReX_OMP=ON \
+		-DAMReX_EB=ON \
+		-DAMReX_LINEAR_SOLVERS=ON \
+		-DAMReX_PARTICLES=ON \
+		-DAMReX_ASSERTIONS=ON \
+		-DAMReX_TINY_PROFILE=ON \
+		-DAMReX_PROFPARSER=ON \
+		-DAMReX_HDF5=ON \
+        -DAMReX_PIC=ON \
+        -DAMReX_INSTALL=ON \
+		-DCMAKE_INSTALL_PREFIX=$(pwd)/../install
+		
+	make -j && make install
+	cd ../..
+	
+	# Install hydroflow
+	git clone https://github.com/AMReX-Fluids/AMReX-Hydro.git
+	cd AMReX-Hydro
+	mkdir build && cd build
+
+	cmake .. \
+		-DCMAKE_BUILD_TYPE=Release \
+  		-DAMReX_DIR=$(pwd)/../../amrex/install/lib/cmake/AMReX \
+		-DHYDRO_GPU_BACKEND=CUDA \
+		-DHDF5_ROOT=/usr/lib/x86_64-linux-gnu/hdf5/openmpi \
+  		-DCMAKE_INSTALL_PREFIX=$(pwd)/../install
+  		
+  	make -j && make install
+	cd ../..

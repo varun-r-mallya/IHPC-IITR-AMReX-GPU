@@ -1,0 +1,3 @@
+[submodule "IAMR"]
+	path = IAMR
+	url = https://github.com/AMReX-Codes/IAMR.git
